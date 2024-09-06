@@ -16,7 +16,7 @@ namespace SignalRChatApp.WebAPI.Controllers
         IHubContext<ChatHub> hubContext) : ControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> GetChats(Guid userId,Guid toUserId)
+        public async Task<IActionResult> GetChats(Guid userId, Guid toUserId)
         {
             List<Chat> chats = await dbContext.Chats
                 .Where(p => p.UserId == userId && p.ToUserId == toUserId ||
@@ -36,10 +36,10 @@ namespace SignalRChatApp.WebAPI.Controllers
             };
             await dbContext.AddAsync(chat);
             await dbContext.SaveChangesAsync();
-            string connectionId  = ChatHub.Users.First(p => p.Value == chat.ToUserId).Key;
+            string connectionId = ChatHub.Users.First(p => p.Value == chat.ToUserId).Key;
             await hubContext.Clients.Client(connectionId).SendAsync("Messages", chat);
             return Ok();
         }
-        
+
     }
 }

@@ -10,6 +10,14 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(
     ));
 builder.Services.AddControllers();
 
+builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
+policy.AllowAnyMethod()
+.AllowCredentials()
+.AllowAnyHeader()
+.SetIsOriginAllowed(origin => true)
+));
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
@@ -24,7 +32,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthorization();
-
+app.UseCors();
 app.MapControllers();
 app.MapHub<ChatHub>("/chatHub");
 app.Run();
