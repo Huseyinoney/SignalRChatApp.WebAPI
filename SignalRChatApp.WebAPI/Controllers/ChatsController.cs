@@ -10,12 +10,12 @@ using System.Reflection.Metadata.Ecma335;
 
 namespace SignalRChatApp.WebAPI.Controllers
 {
-    [Route("api/[controller]/[action]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ChatsController(AppDbContext dbContext,
         IHubContext<ChatHub> hubContext) : ControllerBase
     {
-        [HttpGet]
+        [HttpPost("AllChats")]
         public async Task<IActionResult> GetChats(Guid userId, Guid toUserId)
         {
             List<Chat> chats = await dbContext.Chats
@@ -24,7 +24,7 @@ namespace SignalRChatApp.WebAPI.Controllers
                 .OrderBy(p => p.Date).ToListAsync();
             return Ok(chats);
         }
-        [HttpPost]
+        [HttpPost("SendMessage")]
         public async Task<IActionResult> SendMessage(SendMessageDto sendMessageDto)
         {
             Chat chat = new()
@@ -36,8 +36,8 @@ namespace SignalRChatApp.WebAPI.Controllers
             };
             await dbContext.AddAsync(chat);
             await dbContext.SaveChangesAsync();
-            string connectionId = ChatHub.Users.First(p => p.Value == chat.ToUserId).Key;
-            await hubContext.Clients.Client(connectionId).SendAsync("Messages", chat);
+            string connectionId = ChatHub.UsersList.First(p => p.Id == chat.ToUserId).ConnectionId;
+            await hubContext.Clients.Client(connectionId).SendAsync("SendMessage", chat);
             return Ok();
         }
 
