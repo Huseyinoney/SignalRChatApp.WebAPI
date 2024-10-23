@@ -78,6 +78,11 @@ namespace SignalRChatApp.WebAPI.Hubs
             await Clients.All.SendAsync("ReceivedMessage", message);
         }
 
+        public async Task SendMessageToUser(Chat chat)
+        {
+            await Clients.All.SendAsync("ReceivedMessageToUser",chat);
+        }
+
         public async Task SetUserOffline(string connectionId)
         {
             var userOnUserList = UsersList.FirstOrDefault(u => u.ConnectionId == connectionId);

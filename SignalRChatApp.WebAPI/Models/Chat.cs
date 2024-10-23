@@ -5,6 +5,7 @@
         public Chat()
         {
             Id = Guid.NewGuid();
+            Date = DateTime.Now;
         }
         public Guid Id { get; set; }
         public Guid UserId { get; set; }

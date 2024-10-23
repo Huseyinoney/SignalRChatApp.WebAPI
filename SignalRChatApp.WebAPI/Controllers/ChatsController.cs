@@ -6,7 +6,6 @@ using SignalRChatApp.WebAPI.Context;
 using SignalRChatApp.WebAPI.Dtos;
 using SignalRChatApp.WebAPI.Hubs;
 using SignalRChatApp.WebAPI.Models;
-using System.Reflection.Metadata.Ecma335;
 
 namespace SignalRChatApp.WebAPI.Controllers
 {
@@ -27,17 +26,17 @@ namespace SignalRChatApp.WebAPI.Controllers
         [HttpPost("SendMessage")]
         public async Task<IActionResult> SendMessage(SendMessageDto sendMessageDto)
         {
+
             Chat chat = new()
             {
-                UserId = sendMessageDto.UserId,
-                ToUserId = sendMessageDto.ToUserId,
+                UserId = Guid.Parse(sendMessageDto.UserId),
+                ToUserId = Guid.Parse(sendMessageDto.ToUserId),
                 Message = sendMessageDto.Message,
-                Date = sendMessageDto.Date,
             };
             await dbContext.AddAsync(chat);
             await dbContext.SaveChangesAsync();
             string connectionId = ChatHub.UsersList.First(p => p.Id == chat.ToUserId).ConnectionId;
-            await hubContext.Clients.Client(connectionId).SendAsync("SendMessage", chat);
+            await hubContext.Clients.Client(connectionId).SendAsync("SendMessageToUser", chat);
             return Ok();
         }
 
